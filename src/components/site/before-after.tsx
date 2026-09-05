@@ -40,27 +40,48 @@ export function BeforeAfter() {
         <ImageMask delay={0.1} className="mt-14 rounded-sm shadow-arch">
           <div
             ref={frameRef}
+            role="slider"
+            aria-label="Compare before and after"
+            aria-valuemin={0}
+            aria-valuemax={100}
+            aria-valuenow={Math.round(pct.get())}
+            tabIndex={0}
+            onKeyDown={(e) => {
+              if (e.key === "ArrowLeft" || e.key === "ArrowRight") {
+                e.preventDefault();
+                const step = e.key === "ArrowLeft" ? -4 : 4;
+                pct.set(Math.min(98, Math.max(2, pct.get() + step)));
+              }
+            }}
             onPointerDown={(e) => {
+              e.currentTarget.setPointerCapture(e.pointerId);
               setDragging(true);
               move(e.clientX);
             }}
-            onPointerMove={(e) => dragging && move(e.clientX)}
-            onPointerUp={() => setDragging(false)}
-            onPointerLeave={() => setDragging(false)}
-            className="relative aspect-[16/10] w-full touch-none select-none overflow-hidden"
+            onPointerMove={(e) => {
+              if (dragging) move(e.clientX);
+            }}
+            onPointerUp={(e) => {
+              e.currentTarget.releasePointerCapture(e.pointerId);
+              setDragging(false);
+            }}
+            onPointerCancel={() => setDragging(false)}
+            className="relative aspect-[16/10] w-full cursor-ew-resize touch-none select-none overflow-hidden outline-none"
           >
             <img
               src={afterImg}
               alt="Roof after"
               loading="lazy"
-              className="absolute inset-0 size-full object-cover"
+              draggable={false}
+              className="pointer-events-none absolute inset-0 size-full object-cover"
             />
             <motion.img
               style={{ clipPath: clip }}
               src={beforeImg}
               alt="Roof before"
               loading="lazy"
-              className="absolute inset-0 size-full object-cover"
+              draggable={false}
+              className="pointer-events-none absolute inset-0 size-full object-cover"
             />
             <div className="pointer-events-none absolute inset-0 bg-veil opacity-60" />
 
