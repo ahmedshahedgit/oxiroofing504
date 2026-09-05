@@ -19,7 +19,7 @@ export function SiteFooter() {
               <p className="text-sm text-muted-foreground">Orleans Parish, LA</p>
             </div>
             <div>
-              <span className="eyebrow">Email</span>
+              <span className="eyebrow block">Email</span>
               <a
                 href="mailto:oficialoxitmc@gmail.com"
                 className="link-underline mt-4 inline-block text-sm text-foreground"
