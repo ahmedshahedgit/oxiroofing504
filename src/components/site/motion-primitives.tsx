@@ -7,7 +7,9 @@ export function useMotionOk() {
   return !useReducedMotion();
 }
 
-/** Cinematic mask reveal: content rises out of an overflow-hidden frame. */
+/** Cinematic mask reveal: content rises out of an overflow-hidden frame.
+ *  The outer frame owns the viewport trigger — the inner line is clipped
+ *  while offset, so it can never trigger an in-view check itself. */
 export function MaskLines({
   children,
   delay = 0,
@@ -19,19 +21,29 @@ export function MaskLines({
 }) {
   const ok = useMotionOk();
   return (
-    <span className={`block overflow-hidden ${className ?? ""}`}>
+    <motion.span
+      className={`block overflow-hidden ${className ?? ""}`}
+      initial="hidden"
+      whileInView="show"
+      viewport={{ once: true, margin: "-8%" }}
+    >
       <motion.span
         className="block"
-        initial={ok ? { y: "110%", opacity: 0 } : { opacity: 0 }}
-        whileInView={{ y: "0%", opacity: 1 }}
-        viewport={{ once: true, margin: "-10%" }}
-        transition={{ duration: 1.1, delay, ease: EASE }}
+        variants={{
+          hidden: ok ? { y: "110%", opacity: 0 } : { opacity: 0 },
+          show: {
+            y: "0%",
+            opacity: 1,
+            transition: { duration: 1.1, delay, ease: EASE },
+          },
+        }}
       >
         {children}
       </motion.span>
-    </span>
+    </motion.span>
   );
 }
+
 
 export function Reveal({
   children,
@@ -58,7 +70,8 @@ export function Reveal({
   );
 }
 
-/** Clip-path curtain reveal for images. */
+/** Clip-path curtain reveal for images. The outer frame owns the viewport
+ *  trigger; the clipped inner layer can't report itself as visible. */
 export function ImageMask({
   children,
   delay = 0,
@@ -72,15 +85,29 @@ export function ImageMask({
   return (
     <motion.div
       className={`overflow-hidden ${className ?? ""}`}
-      initial={ok ? { clipPath: "inset(0 0 100% 0)" } : { opacity: 0 }}
-      whileInView={ok ? { clipPath: "inset(0 0 0% 0)" } : { opacity: 1 }}
-      viewport={{ once: true, margin: "-10%" }}
-      transition={{ duration: 1.3, delay, ease: EASE }}
+      initial="hidden"
+      whileInView="show"
+      viewport={{ once: true, margin: "-8%" }}
     >
-      {children}
+      <motion.div
+        variants={{
+          hidden: ok ? { clipPath: "inset(0 0 100% 0)" } : { opacity: 0 },
+          show: ok
+            ? {
+                clipPath: "inset(0 0 0% 0)",
+                opacity: 1,
+                transition: { duration: 1.3, delay, ease: EASE },
+              }
+            : { opacity: 1, transition: { duration: 0.6, delay } },
+        }}
+
+      >
+        {children}
+      </motion.div>
     </motion.div>
   );
 }
+
 
 export const staggerParent: Variants = {
   hidden: {},
