@@ -92,12 +92,15 @@ export function ImageMask({
       <motion.div
         variants={{
           hidden: ok ? { clipPath: "inset(0 0 100% 0)" } : { opacity: 0 },
-          show: {
-            clipPath: ok ? "inset(0 0 0% 0)" : undefined,
-            opacity: 1,
-            transition: { duration: 1.3, delay, ease: EASE },
-          },
+          show: ok
+            ? {
+                clipPath: "inset(0 0 0% 0)",
+                opacity: 1,
+                transition: { duration: 1.3, delay, ease: EASE },
+              }
+            : { opacity: 1, transition: { duration: 0.6, delay } },
         }}
+
       >
         {children}
       </motion.div>
