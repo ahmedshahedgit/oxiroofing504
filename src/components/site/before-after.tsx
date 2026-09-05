@@ -72,14 +72,16 @@ export function BeforeAfter() {
               src={afterImg}
               alt="Roof after"
               loading="lazy"
-              className="absolute inset-0 size-full object-cover"
+              draggable={false}
+              className="pointer-events-none absolute inset-0 size-full object-cover"
             />
             <motion.img
               style={{ clipPath: clip }}
               src={beforeImg}
               alt="Roof before"
               loading="lazy"
-              className="absolute inset-0 size-full object-cover"
+              draggable={false}
+              className="pointer-events-none absolute inset-0 size-full object-cover"
             />
             <div className="pointer-events-none absolute inset-0 bg-veil opacity-60" />
 
