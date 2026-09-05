@@ -70,7 +70,8 @@ export function Reveal({
   );
 }
 
-/** Clip-path curtain reveal for images. */
+/** Clip-path curtain reveal for images. The outer frame owns the viewport
+ *  trigger; the clipped inner layer can't report itself as visible. */
 export function ImageMask({
   children,
   delay = 0,
@@ -84,15 +85,26 @@ export function ImageMask({
   return (
     <motion.div
       className={`overflow-hidden ${className ?? ""}`}
-      initial={ok ? { clipPath: "inset(0 0 100% 0)" } : { opacity: 0 }}
-      whileInView={ok ? { clipPath: "inset(0 0 0% 0)" } : { opacity: 1 }}
-      viewport={{ once: true, margin: "-10%" }}
-      transition={{ duration: 1.3, delay, ease: EASE }}
+      initial="hidden"
+      whileInView="show"
+      viewport={{ once: true, margin: "-8%" }}
     >
-      {children}
+      <motion.div
+        variants={{
+          hidden: ok ? { clipPath: "inset(0 0 100% 0)" } : { opacity: 0 },
+          show: {
+            clipPath: ok ? "inset(0 0 0% 0)" : undefined,
+            opacity: 1,
+            transition: { duration: 1.3, delay, ease: EASE },
+          },
+        }}
+      >
+        {children}
+      </motion.div>
     </motion.div>
   );
 }
+
 
 export const staggerParent: Variants = {
   hidden: {},
